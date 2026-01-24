@@ -188,6 +188,7 @@ body{
 }
 .btn span{position:relative;z-index:2;}
 </style>
+
 </head>
 
 <body>
@@ -620,4 +621,353 @@ body{
 
 </div>
 </body>
+
+<script>
+const playlist = [
+  "https://files.catbox.moe/ndtckm.mp3",
+  "https://files.catbox.moe/spjswf.mp3"
+];
+
+let index = 0;
+let audio = new Audio();
+audio.volume = 0.8;
+
+function playMusic() {
+  audio.src = playlist[index];
+  audio.play();
+}
+
+audio.addEventListener("ended", () => {
+  index = (index + 1) % playlist.length;
+  playMusic();
+});
+
+document.addEventListener("click", () => {
+  if (audio.paused) {
+    playMusic();
+  }
+}, { once: true });
+</script>
+
+<style>
+.snowflake {
+  position: fixed;
+  top: -10px;
+  color: white;
+  font-size: 14px;
+  user-select: none;
+  pointer-events: none;
+  z-index: 9999;
+  animation-name: fall;
+  animation-timing-function: linear;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh);
+  }
+}
+</style>
+
+<script>
+function createSnowflake() {
+  const snow = document.createElement("div");
+  snow.className = "snowflake";
+  snow.innerHTML = "❄";
+  snow.style.left = Math.random() * window.innerWidth + "px";
+  snow.style.fontSize = Math.random() * 10 + 10 + "px";
+  snow.style.animationDuration = Math.random() * 5 + 5 + "s";
+  document.body.appendChild(snow);
+
+  setTimeout(() => {
+    snow.remove();
+  }, 10000);
+}
+
+setInterval(createSnowflake, 200);
+</script>
+
+<style>
+/* ===== TUYẾT ===== */
+.snowflake{
+  position:fixed;
+  top:-10px;
+  color:white;
+  user-select:none;
+  pointer-events:none;
+  z-index:9999;
+  animation: fall linear forwards;
+}
+
+@keyframes fall{
+  to{
+    transform: translateY(110vh);
+  }
+}
+
+/* ===== ĐÈN NOEL ===== */
+.christmas-lights{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  z-index:9998;
+}
+
+.light{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  animation: blink 1.5s infinite alternate;
+}
+
+.light.red{background:#ff3b3b;}
+.light.green{background:#22c55e;}
+.light.yellow{background:#facc15;}
+.light.blue{background:#38bdf8;}
+
+@keyframes blink{
+  from{opacity:0.3;}
+  to{opacity:1;}
+}
+</style>
+   
+<script>
+/* ===== TUYẾT ===== */
+function createSnow(){
+  const snow = document.createElement("div");
+  snow.className = "snowflake";
+  snow.innerHTML = "❄";
+  snow.style.left = Math.random()*window.innerWidth + "px";
+  snow.style.fontSize = Math.random()*10 + 10 + "px";
+  snow.style.animationDuration = Math.random()*5 + 5 + "s";
+  document.body.appendChild(snow);
+
+  setTimeout(()=>snow.remove(),10000);
+}
+setInterval(createSnow,180);
+
+/* ===== ĐÈN NOEL ===== */
+const lights = document.createElement("div");
+lights.className = "christmas-lights";
+
+const colors = ["red","green","yellow","blue"];
+for(let i=0;i<30;i++){
+  const bulb = document.createElement("div");
+  bulb.className = "light " + colors[i%4];
+  bulb.style.animationDelay = Math.random()+"s";
+  lights.appendChild(bulb);
+}
+document.body.appendChild(lights);
+</script>
+
+<style>
+/* ===== DÂY ĐÈN CONG ===== */
+.light-rope{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:80px;
+  z-index:9998;
+  pointer-events:none;
+}
+
+.light-rope svg{
+  width:100%;
+  height:100%;
+}
+
+.bulb{
+  fill:#ff3b3b;
+  filter:drop-shadow(0 0 6px currentColor);
+  transition:opacity 0.1s, fill 0.1s;
+}
+</style>
+
+<div class="light-rope">
+<svg viewBox="0 0 1000 120" preserveAspectRatio="none">
+  <path d="M0,60 Q250,120 500,60 T1000,60" fill="none"/>
+  <g id="bulbs"></g>
+</svg>
+</div>
+
+<script>
+/* ===== TẠO ĐÈN ===== */
+const bulbGroup = document.getElementById("bulbs");
+const colors = ["#ff3b3b","#22c55e","#facc15","#38bdf8"];
+const bulbCount = 30;
+
+for(let i=0;i<bulbCount;i++){
+  const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+  c.setAttribute("cx", (i/(bulbCount-1))*1000);
+  c.setAttribute("cy", 60 + Math.sin(i)*20);
+  c.setAttribute("r", 6);
+  c.style.fill = colors[i%4];
+  c.classList.add("bulb");
+  bulbGroup.appendChild(c);
+}
+
+/* ===== NHẤP THEO NHẠC ===== */
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const ctx = new AudioContext();
+const analyser = ctx.createAnalyser();
+analyser.fftSize = 256;
+const data = new Uint8Array(analyser.frequencyBinCount);
+
+document.addEventListener("click",()=>{
+  document.querySelectorAll("audio").forEach(a=>{
+    const src = ctx.createMediaElementSource(a);
+    src.connect(analyser);
+    analyser.connect(ctx.destination);
+  });
+},{once:true});
+
+function animateLights(){
+  analyser.getByteFrequencyData(data);
+  const level = data.reduce((a,b)=>a+b,0)/data.length;
+
+  document.querySelectorAll(".bulb").forEach((b,i)=>{
+    b.style.opacity = Math.min(1, level/120);
+    b.style.fill = colors[(i+Math.floor(level/40))%4];
+  });
+
+  requestAnimationFrame(animateLights);
+}
+animateLights();
+</script>
+
+<style>
+/* NỀN TRỜI ĐÊM */
+#sky {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at bottom, #020617, #000);
+    overflow: hidden;
+    z-index: -1;
+}
+
+/* SAO BĂNG */
+.shooting-star {
+    position: absolute;
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, white, transparent);
+    opacity: 0.8;
+    transform: rotate(-20deg);
+    animation: fly 2s linear forwards;
+}
+
+@keyframes fly {
+    from {
+        transform: translate(0, 0) rotate(-20deg);
+        opacity: 1;
+    }
+    to {
+        transform: translate(600px, 300px) rotate(-20deg);
+        opacity: 0;
+    }
+}
+</style>
+
+<div id="sky"></div>
+
+<script>
+const sky = document.getElementById("sky");
+
+function createStar() {
+    const star = document.createElement("div");
+    star.className = "shooting-star";
+
+    star.style.top = Math.random() * window.innerHeight + "px";
+    star.style.left = Math.random() * window.innerWidth + "px";
+
+    sky.appendChild(star);
+
+    setTimeout(() => {
+        star.remove();
+    }, 2000);
+}
+
+// TẠO SAO BĂNG LIÊN TỤC
+setInterval(createStar, 800);
+</script>
+
+<!-- CHECKING SCREEN -->
+<div id="checkScreen">
+  <div class="loader"></div>
+  <h2>Verifying connection</h2>
+  <p id="checkText">Checking system...</p>
+</div>
+
+<style>
+#checkScreen {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top, #0b1220, #000);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  z-index: 9999;
+  font-family: Arial, sans-serif;
+}
+
+.loader {
+  width: 70px;
+  height: 70px;
+  border: 5px solid rgba(0,255,255,0.15);
+  border-top: 5px solid #00f7ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+
+#checkText {
+  color: #00ff99;
+  font-size: 14px;
+  margin-top: 8px;
+}
+</style>
+
+<script>
+const texts = [
+  "Checking system integrity...",
+  "Verifying user environment...",
+  "Scanning for virtual users...",
+  "Checking bot activity...",
+  "Validating IP address...",
+  "Analyzing behavior pattern...",
+  "Checking anti-abuse layer...",
+  "Verifying request source...",
+  "Final security check...",
+  "Connection verified ✓"
+];
+
+let i = 0;
+const textEl = document.getElementById("checkText");
+
+const interval = setInterval(() => {
+  textEl.textContent = texts[i];
+  i++;
+
+  if (i === texts.length) {
+    clearInterval(interval);
+
+    // ❌ XÓA MENU SAU 10 GIÂY
+    setTimeout(() => {
+      document.getElementById("checkScreen").style.display = "none";
+    }, 800);
+  }
+}, 1000);
+</script>
+
 </html>
